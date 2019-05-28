@@ -166,6 +166,7 @@ public class NPStack {
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
         int index = rnd.nextInt(stack.size());
 
+
         // Get list of all boxes that could go in the place
         BoxList possibleSwaps = new BoxList();
         for (Box box : unusedBoxes) {

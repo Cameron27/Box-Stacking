@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BoxListTest {
@@ -16,10 +15,5 @@ class BoxListTest {
             assertNotNull(b);
             System.out.println(b.toString());
         }
-
-        BoxList newList = new BoxList(list);
-        newList.add(new Box(3, 10, 11, 12));
-        assertEquals(3, list.size());
-        assertEquals(4, newList.size());
     }
 }
