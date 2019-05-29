@@ -8,23 +8,34 @@ class NPStackTest {
 
     @Test
     void run() {
-        String file = "rand0500.boxes";
-        int considerations = 1000;
+        String[] files = new String[]{
+                "rand0010.boxes",
+                "rand0050.boxes",
+                "rand0100.boxes",
+                "rand0500.boxes",
+                "rand1000.boxes"
+        };
+        int[] considerations = new int[]{
+                50,
+                100,
+                500,
+                1000,
+                5000
+        };
 
         try {
 
             long time = System.currentTimeMillis();
             int sum = 0;
-            int times = 100;
-            for (int i = 0; i < times; i++) {
-                if (i % 10 == 0)
-                    System.out.println(i);
-                sum += NPStack.run(file, considerations);
+            int times = 50;
+            for (int i = 0; i < files.length; i++) {
+                for (int j = 0; j < times; j++) {
+                    sum += NPStack.run(files[i], considerations[i]);
+                }
+                System.out.println("Height: " + (sum / times) + " Time: " + (System.currentTimeMillis() - time) / times + " File: " + files[i] + " Considerations: " + considerations[i]);
             }
-            System.out.println("Height: " + (sum / times) + " Time: " + (System.currentTimeMillis() - time));
-
         } catch (FileNotFoundException e) {
-            fail("File \"" + file + "\" not found");
+            fail("File \"" + files[0] + "\" not found");
         }
 //        catch (IOException e) {
 //            fail("Error reading from file \"" + file + "\" ");
