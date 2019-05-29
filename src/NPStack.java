@@ -168,7 +168,7 @@ public class NPStack {
 
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
         int index = rnd.nextInt(stack.size());
-        int limit = (int) Math.ceil(unusedBoxes.size() * 0.1) * 3;
+        int limit = (int) Math.ceil(unusedBoxes.size() * 0.2) * 3;
         int count = 0;
 
         for (Box box : unusedBoxes) {
