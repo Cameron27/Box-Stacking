@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class NPStack {
-    static Random rnd = new Random();
+    private static Random rnd = new Random();
 
     public static void main(String[] args) {
         // Checks for 2 arguments
@@ -65,7 +65,7 @@ public class NPStack {
         // For the number of considerations allowed
         for (int nthConsider = 1; nthConsider <= maxConsiderations; nthConsider++) {
             // Calculate the number of changes
-            int numberOfChanges = changesToMake(nthConsider, maxConsiderations, boxCount, 10);
+            int numberOfChanges = changesToMake(nthConsider, maxConsiderations, boxCount);
 
             // Create clones
             BoxStack newStack = new BoxStack(stack);
@@ -85,6 +85,9 @@ public class NPStack {
                 unusedBoxes = newUnusedBoxes;
             }
         }
+
+        if (!stack.validateStack())
+            throw new RuntimeException();
 
         return stack.height();
     }
@@ -157,68 +160,72 @@ public class NPStack {
 
     // Calculates the number of changes to make based on the total amount of considerations already made, the total
     // number of boxes and some ratio. The changes to make calculated using a quadratic
-    private static int changesToMake(int nthConsideration, int maxConsiderations, int boxNumber, int ratio) {
+    private static int changesToMake(int nthConsideration, int maxConsiderations, int boxNumber) {
         double d = (double) (maxConsiderations - nthConsideration + 1) / (double) maxConsiderations;
         double square = d * d;
-        return (int) Math.ceil((square * boxNumber) / ratio);
+        return (int) Math.ceil((square * intLog2(boxNumber) * 2));
     }
 
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
         int index = rnd.nextInt(stack.size());
+        int limit = (int) Math.ceil(unusedBoxes.size() * 0.1) * 3;
+        int count = 0;
 
-
-        // Get list of all boxes that could go in the place
-        BoxList possibleSwaps = new BoxList();
         for (Box box : unusedBoxes) {
+            if (count > limit) return;
+
             Box below = stack.get(index - 1);
             Box above = stack.get(index + 1);
 
             // See of that box can be inserted at the current index
             if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                possibleSwaps.add(box);
+                // Store old box and replace it
+                Box oldBox = stack.get(index);
+                stack.set(index, box);
+
+                // Makes changes to list of unused boxes
+                unusedBoxes.add(oldBox);
+                unusedBoxes.removeId(box.getId());
+                return;
             }
-        }
-
-        // If some boxes were found
-        if (possibleSwaps.size() > 0) {
-            // Pick a random box
-            Box boxToSwap = possibleSwaps.get(rnd.nextInt(possibleSwaps.size()));
-
-            // Store old box and replace it
-            Box oldBox = stack.get(index);
-            stack.set(index, boxToSwap);
-
-            // Makes changes to list of unused boxes
-            unusedBoxes.add(oldBox);
-            unusedBoxes.removeId(boxToSwap.getId());
+            count++;
         }
     }
 
     private static void insertBox(BoxStack stack, BoxList unusedBoxes) {
         int index = rnd.nextInt(stack.size());
+        int limit = (int) Math.ceil(unusedBoxes.size() * 0.1) * 3;
+        int count = 0;
 
-        // Get list of all boxes that could go in the place
-        BoxList possibleInserts = new BoxList();
         for (Box box : unusedBoxes) {
+            if (count > limit) return;
+
             Box below = stack.get(index - 1);
             Box above = stack.get(index);
 
             // See of that box can be inserted at the current index
             if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                possibleInserts.add(box);
+                // Store old box and replace it
+                stack.add(index, box);
+
+                // Makes changes to list of unused boxes
+                unusedBoxes.removeId(box.getId());
+                return;
             }
+            count++;
+        }
+    }
+
+    private static int intLog2(int i) {
+        if (i < 0)
+            i = -i;
+
+        int log = 0;
+        while (i != 0) {
+            log++;
+            i >>= 1;
         }
 
-        // If some boxes were found
-        if (possibleInserts.size() > 0) {
-            // Pick a random box
-            Box boxToInsert = possibleInserts.get(rnd.nextInt(possibleInserts.size()));
-
-            // Insert box
-            stack.add(index, boxToInsert);
-
-            // Makes changes to list of unused boxes
-            unusedBoxes.removeId(boxToInsert.getId());
-        }
+        return log;
     }
 }

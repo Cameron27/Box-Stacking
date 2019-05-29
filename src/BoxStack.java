@@ -1,6 +1,8 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class BoxStack extends LinkedList<Box> {
+public class BoxStack extends ArrayList<Box> {
     public BoxStack() {
         super();
     }
@@ -18,6 +20,27 @@ public class BoxStack extends LinkedList<Box> {
             sum += b.getHeight();
 
         return sum;
+    }
+
+    public boolean validateStack() {
+        if (size() == 0) return true;
+        Box current = get(0);
+        Set<Integer> set = new HashSet<Integer>();
+        set.add(get(0).getId());
+
+        for (int i = 1; i < size(); i++) {
+            Box box = get(i);
+            if (box.getWidth() > current.getWidth() || box.getDepth() > current.getDepth())
+                return false;
+
+            if (set.contains(box.getId()))
+                return false;
+            else
+                set.add(box.getId());
+
+        }
+
+        return true;
     }
 
     @Override

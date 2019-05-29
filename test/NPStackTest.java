@@ -9,7 +9,7 @@ class NPStackTest {
     @Test
     void run() {
         String file = "rand0500.boxes";
-        int considerations = 100;
+        int considerations = 1000;
 
         try {
 
@@ -17,6 +17,8 @@ class NPStackTest {
             int sum = 0;
             int times = 100;
             for (int i = 0; i < times; i++) {
+                if (i % 10 == 0)
+                    System.out.println(i);
                 sum += NPStack.run(file, considerations);
             }
             System.out.println("Height: " + (sum / times) + " Time: " + (System.currentTimeMillis() - time));

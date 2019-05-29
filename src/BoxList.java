@@ -1,8 +1,9 @@
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
-public class BoxList extends LinkedList<Box> {
+public class BoxList extends ArrayList<Box> {
     public BoxList() {
         super();
     }
@@ -32,7 +33,7 @@ public class BoxList extends LinkedList<Box> {
     private class BoxListIterator implements Iterator<Box> {
         int startIndex;
         int index;
-        BoxList rotationsInIndex;
+        List<Box> rotationsInIndex;
 
         private BoxListIterator() {
             // Sets up random starting index
@@ -44,7 +45,7 @@ public class BoxList extends LinkedList<Box> {
                 index = -1;
             }
             Box boxInIndex = get(index);
-            rotationsInIndex = makeRotationsList(boxInIndex);
+            rotationsInIndex = boxInIndex.makeRotations();
         }
 
         @Override
@@ -74,23 +75,10 @@ public class BoxList extends LinkedList<Box> {
 
                 // Get the box and add every rotation to the list
                 Box boxInIndex = get(index);
-                rotationsInIndex = makeRotationsList(boxInIndex);
+                rotationsInIndex = boxInIndex.makeRotations();
             }
 
-            return rotationsInIndex.remove();
-        }
-
-        private BoxList makeRotationsList(Box box) {
-            BoxList rotations = new BoxList();
-            int id = box.getId();
-            int width = box.getWidth();
-            int depth = box.getDepth();
-            int height = box.getHeight();
-            rotations.add(new Box(id, width, depth, height));
-            rotations.add(new Box(id, width, height, depth));
-            rotations.add(new Box(id, height, depth, width));
-
-            return rotations;
+            return rotationsInIndex.remove(0);
         }
     }
 }

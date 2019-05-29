@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.List;
+
 public class Box {
     private int id;
     private int width;
@@ -12,6 +15,14 @@ public class Box {
         this.depth = Math.min(base1, base2);
 
         this.height = height;
+    }
+
+    public List<Box> makeRotations() {
+        List<Box> l = new LinkedList<>();
+        l.add(new Box(id, width, depth, height));
+        l.add(new Box(id, width, height, depth));
+        l.add(new Box(id, height, depth, width));
+        return l;
     }
 
     public int getId() {
