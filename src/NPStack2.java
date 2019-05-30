@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Random;
 
 @SuppressWarnings("Duplicates")
-public class NPStack {
+public class NPStack2 {
     private static Random rnd = new Random();
 
     public static void main(String[] args) {
@@ -167,56 +167,34 @@ public class NPStack {
     }
 
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
-        int index = rnd.nextInt(stack.size());
-        int limit = (int) Math.ceil(unusedBoxes.size() * 0.2) * 3;
-        int count = 0;
+        int boxIndex = rnd.nextInt(unusedBoxes.size());
+        Box box = unusedBoxes.get(boxIndex);
+        box = box.makeRotations().get(rnd.nextInt(3));
 
-        Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
-        while (iter.hasNext()) {
-            Box box = iter.next();
-            if (count > limit) return;
+        for (int i = 0; i < stack.size(); i++) {
+            Box below = stack.get(i - 1);
+            Box above = stack.get(i + 1);
 
-            Box below = stack.get(index - 1);
-            Box above = stack.get(index + 1);
-
-            // See of that box can be inserted at the current index
             if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                // Store old box and replace it
-                Box oldBox = stack.get(index);
-                stack.set(index, box);
-
-                // Makes changes to list of unused boxes
-                unusedBoxes.add(oldBox);
-                unusedBoxes.removeId(box.getId());
-                return;
+                unusedBoxes.set(boxIndex, stack.get(i));
+                stack.set(i, box);
             }
-            count++;
         }
     }
 
     private static void insertBox(BoxStack stack, BoxList unusedBoxes) {
-        int index = rnd.nextInt(stack.size());
-        int limit = (int) Math.ceil(unusedBoxes.size() * 0.1) * 3;
-        int count = 0;
+        int boxIndex = rnd.nextInt(unusedBoxes.size());
+        Box box = unusedBoxes.get(boxIndex);
+        box = box.makeRotations().get(rnd.nextInt(3));
 
-        Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
-        while (iter.hasNext()) {
-            Box box = iter.next();
-            if (count > limit) return;
+        for (int i = 0; i < stack.size(); i++) {
+            Box below = stack.get(i - 1);
+            Box above = stack.get(i);
 
-            Box below = stack.get(index - 1);
-            Box above = stack.get(index);
-
-            // See of that box can be inserted at the current index
             if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                // Store old box and replace it
-                stack.add(index, box);
-
-                // Makes changes to list of unused boxes
-                unusedBoxes.removeId(box.getId());
-                return;
+                stack.add(i, box);
+                unusedBoxes.remove(boxIndex);
             }
-            count++;
         }
     }
 

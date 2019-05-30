@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-class NPStackTest {
+class NPStack2Test {
 
     @Test
     void run() {
@@ -30,7 +30,7 @@ class NPStackTest {
             int times = 50;
             for (int i = 0; i < files.length; i++) {
                 for (int j = 0; j < times; j++) {
-                    sum += NPStack.run(files[i], considerations[i]);
+                    sum += NPStack2.run(files[i], considerations[i]);
                 }
                 System.out.println("Height: " + (sum / times) + " Time: " + (System.currentTimeMillis() - time) / times + " File: " + files[i] + " Considerations: " + considerations[i]);
             }
