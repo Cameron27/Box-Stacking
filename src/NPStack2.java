@@ -2,10 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @SuppressWarnings("Duplicates")
 public class NPStack2 {
@@ -168,32 +165,39 @@ public class NPStack2 {
 
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
         int boxIndex = rnd.nextInt(unusedBoxes.size());
-        Box box = unusedBoxes.get(boxIndex);
-        box = box.makeRotations().get(rnd.nextInt(3));
+        Box boxToSwapIn = unusedBoxes.get(boxIndex);
+        List<Box> boxes = boxToSwapIn.makeRotations();
 
         for (int i = 0; i < stack.size(); i++) {
             Box below = stack.get(i - 1);
+            Box current = stack.get(i - 1);
             Box above = stack.get(i + 1);
 
-            if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                unusedBoxes.set(boxIndex, stack.get(i));
-                stack.set(i, box);
+            for (Box box : boxes) {
+                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                    unusedBoxes.set(boxIndex, stack.get(i));
+                    stack.set(i, box);
+                    return;
+                }
             }
         }
     }
 
     private static void insertBox(BoxStack stack, BoxList unusedBoxes) {
         int boxIndex = rnd.nextInt(unusedBoxes.size());
-        Box box = unusedBoxes.get(boxIndex);
-        box = box.makeRotations().get(rnd.nextInt(3));
+        Box boxToSwapIn = unusedBoxes.get(boxIndex);
+        List<Box> boxes = boxToSwapIn.makeRotations();
 
         for (int i = 0; i < stack.size(); i++) {
             Box below = stack.get(i - 1);
             Box above = stack.get(i);
 
-            if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                stack.add(i, box);
-                unusedBoxes.remove(boxIndex);
+            for (Box box : boxes) {
+                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                    stack.add(i, box);
+                    unusedBoxes.remove(boxIndex);
+                    return;
+                }
             }
         }
     }
