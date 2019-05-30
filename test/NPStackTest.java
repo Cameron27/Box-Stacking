@@ -13,14 +13,14 @@ class NPStackTest {
                 "rand0050.boxes",
                 "rand0100.boxes",
                 "rand0500.boxes",
-                "rand1000.boxes"
+                //"rand1000.boxes"
         };
         int[] considerations = new int[]{
                 50,
                 100,
                 500,
                 1000,
-                5000
+                //5000
         };
 
         try {

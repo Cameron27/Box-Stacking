@@ -25,7 +25,7 @@ public class BoxStack extends ArrayList<Box> {
     public boolean validateStack() {
         if (size() == 0) return true;
         Box current = get(0);
-        Set<Integer> set = new HashSet<Integer>();
+        Set<Integer> set = new HashSet<>();
         set.add(get(0).getId());
 
         for (int i = 1; i < size(); i++) {

@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 
@@ -132,7 +133,9 @@ public class NPStack {
             Box boxToRemove = null;
 
             // For every box
-            for (Box box : unusedBoxes) {
+            Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
+            while (iter.hasNext()) {
+                Box box = iter.next();
                 Box below = output.get(index - 1);
                 Box above = output.get(index);
 
@@ -145,7 +148,6 @@ public class NPStack {
             }
 
             // If a box was inserted, remove it
-            // noinspection ConstantConditions
             if (boxToRemove != null) {
                 unusedBoxes.removeId(boxToRemove.getId());
             }
@@ -171,7 +173,9 @@ public class NPStack {
         int limit = (int) Math.ceil(unusedBoxes.size() * 0.2) * 3;
         int count = 0;
 
-        for (Box box : unusedBoxes) {
+        Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
+        while (iter.hasNext()) {
+            Box box = iter.next();
             if (count > limit) return;
 
             Box below = stack.get(index - 1);
@@ -197,7 +201,9 @@ public class NPStack {
         int limit = (int) Math.ceil(unusedBoxes.size() * 0.1) * 3;
         int count = 0;
 
-        for (Box box : unusedBoxes) {
+        Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
+        while (iter.hasNext()) {
+            Box box = iter.next();
             if (count > limit) return;
 
             Box below = stack.get(index - 1);
