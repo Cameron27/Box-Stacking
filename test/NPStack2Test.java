@@ -9,24 +9,26 @@ class NPStack2Test {
     @Test
     void run() {
         String[] files = new String[]{
-//                "rand0010.boxes",
-//                "rand0050.boxes",
-//                "rand0100.boxes",
-//                "rand0500.boxes",
+                "rand0010.boxes",
+                "rand0020.boxes",
+                "rand0050.boxes",
+                "rand0100.boxes",
+                "rand0500.boxes",
                 "rand1000.boxes"
         };
         int[] considerations = new int[]{
-//                50,
-//                100,
-//                500,
-//                1000,
+                25,
+                50,
+                100,
+                500,
+                1000,
                 5000
         };
 
         try {
 
             long time = System.currentTimeMillis();
-            int times = 150;
+            int times = 50;
             for (int i = 0; i < files.length; i++) {
                 int sum = 0;
                 int max = Integer.MIN_VALUE;

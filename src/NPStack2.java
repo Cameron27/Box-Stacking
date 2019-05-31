@@ -2,7 +2,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 @SuppressWarnings("Duplicates")
 public class NPStack2 {
@@ -56,10 +59,25 @@ public class NPStack2 {
         }
 
         // Generate initial stack
-        BoxStack stack = makeInitialStack(unusedBoxes);
+        int limit = Math.min((int) Math.ceil(maxConsiderations * 0.05), 10);
+        BoxStack bestStack = null;
+        BoxList bestUnusedBoxes = null;
+        for (int i = 0; i < limit; i++) {
+            BoxList candidateUnusedBoxes = new BoxList(unusedBoxes);
+            Collections.shuffle(candidateUnusedBoxes);
+            BoxStack candidateStack = makeInitialStack(candidateUnusedBoxes);
+
+            if (bestStack == null || candidateStack.height() > bestStack.height()) {
+                bestStack = candidateStack;
+                bestUnusedBoxes = candidateUnusedBoxes;
+            }
+        }
+
+        BoxStack stack = bestStack;
+        unusedBoxes = bestUnusedBoxes;
 
         // For the number of considerations allowed
-        for (int nthConsider = 1; nthConsider <= maxConsiderations; nthConsider++) {
+        for (int nthConsider = limit; nthConsider < maxConsiderations; nthConsider++) {
             // Calculate the number of changes
             int numberOfChanges = changesToMake(nthConsider, maxConsiderations, boxCount);
 
@@ -119,7 +137,6 @@ public class NPStack2 {
                 })
                 .forEach(output::add); // Add boxes to box list
 
-        Collections.shuffle(output, rnd);
         return output;
     }
 
@@ -128,26 +145,26 @@ public class NPStack2 {
 
         int index = 0;
         while (index <= output.size()) {
-            Box boxToRemove = null;
+            int boxToRemove = -1;
+
 
             // For every box
-            Iterator<Box> iter = unusedBoxes.rotationsIterator(rnd.nextInt(unusedBoxes.size()));
-            while (iter.hasNext()) {
-                Box box = iter.next();
+            for (int i = 0; i < unusedBoxes.size(); i++) {
+                Box box = unusedBoxes.get(i);
                 Box below = output.get(index - 1);
                 Box above = output.get(index);
 
                 // See of that box can be inserted at the current index
                 if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
                     output.add(index, box);
-                    boxToRemove = box;
+                    boxToRemove = i;
                     break;
                 }
             }
 
             // If a box was inserted, remove it
-            if (boxToRemove != null) {
-                unusedBoxes.removeId(boxToRemove.getId());
+            if (boxToRemove != -1) {
+                unusedBoxes.remove(boxToRemove);
             }
             // If no box was inserted, increase the index
             else {
