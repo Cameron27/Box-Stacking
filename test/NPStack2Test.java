@@ -9,26 +9,26 @@ class NPStack2Test {
     @Test
     void run() {
         String[] files = new String[]{
-                "rand0010.boxes",
-                "rand0050.boxes",
-                "rand0100.boxes",
-                "rand0500.boxes",
+//                "rand0010.boxes",
+//                "rand0050.boxes",
+//                "rand0100.boxes",
+//                "rand0500.boxes",
                 "rand1000.boxes"
         };
         int[] considerations = new int[]{
-                50,
-                100,
-                500,
-                1000,
+//                50,
+//                100,
+//                500,
+//                1000,
                 5000
         };
 
         try {
 
             long time = System.currentTimeMillis();
-            int sum = 0;
-            int times = 50;
+            int times = 150;
             for (int i = 0; i < files.length; i++) {
+                int sum = 0;
                 int max = Integer.MIN_VALUE;
                 int min = Integer.MAX_VALUE;
                 for (int j = 0; j < times; j++) {
@@ -40,7 +40,7 @@ class NPStack2Test {
                         min = height;
                 }
                 System.out.println("File: " + files[i] + ", Considerations: " + considerations[i] + ", Simulations: " + times);
-                System.out.println("Average Height: " + (sum / times) + "\nMax Height: " + max + "\nMin Height: " + min + "\nAverage Time (ms): " + (System.currentTimeMillis() - time) / times);
+                System.out.println("Max Height: " + max + "\nAverage Height: " + (sum / times) + "\nMin Height: " + min + "\nAverage Time (ms): " + (System.currentTimeMillis() - time) / times);
                 System.out.println();
             }
         } catch (FileNotFoundException e) {

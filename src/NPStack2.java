@@ -119,7 +119,7 @@ public class NPStack2 {
                 })
                 .forEach(output::add); // Add boxes to box list
 
-        Collections.shuffle(output);
+        Collections.shuffle(output, rnd);
         return output;
     }
 
