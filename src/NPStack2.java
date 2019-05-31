@@ -69,10 +69,13 @@ public class NPStack2 {
 
             // For the number of changes, either insert or replace a box
             for (int i = 0; i < numberOfChanges; i++) {
-                if (rnd.nextFloat() < 0.5) {
+                float rndFloat = rnd.nextFloat();
+                if (rndFloat < 0.4) {
                     swapBox(newStack, newUnusedBoxes);
-                } else {
+                } else if (rndFloat < 0.9) {
                     insertBox(newStack, newUnusedBoxes);
+                } else {
+                    removeBox(stack, unusedBoxes);
                 }
             }
 
@@ -164,13 +167,14 @@ public class NPStack2 {
     }
 
     private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
+        if (unusedBoxes.size() == 0) return;
+
         int boxIndex = rnd.nextInt(unusedBoxes.size());
         Box boxToSwapIn = unusedBoxes.get(boxIndex);
         List<Box> boxes = boxToSwapIn.makeRotations();
 
         for (int i = 0; i < stack.size(); i++) {
             Box below = stack.get(i - 1);
-            Box current = stack.get(i - 1);
             Box above = stack.get(i + 1);
 
             for (int j = 0; j < boxes.size(); j++) {
@@ -190,6 +194,8 @@ public class NPStack2 {
     }
 
     private static void insertBox(BoxStack stack, BoxList unusedBoxes) {
+        if (unusedBoxes.size() == 0) return;
+
         int boxIndex = rnd.nextInt(unusedBoxes.size());
         Box boxToSwapIn = unusedBoxes.get(boxIndex);
         List<Box> boxes = boxToSwapIn.makeRotations();
@@ -212,6 +218,13 @@ public class NPStack2 {
                 }
             }
         }
+    }
+
+    private static void removeBox(BoxStack stack, BoxList unusedBoxes) {
+        if (stack.size() == 0) return;
+
+        Box removedBox = stack.remove(rnd.nextInt(stack.size()));
+        unusedBoxes.add(removedBox);
     }
 
     private static int intLog2(int i) {
