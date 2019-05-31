@@ -42,7 +42,7 @@ public class NPStack2 {
         }
     }
 
-    static int run(String fileName, int maxConsiderations) throws FileNotFoundException {
+    static BoxStack run(String fileName, int maxConsiderations) throws FileNotFoundException {
         // Create list of boxes
         BufferedReader file = new BufferedReader(new FileReader(new File(fileName)));
         BoxList unusedBoxes = makeList(file);
@@ -52,7 +52,7 @@ public class NPStack2 {
         // Check at least one box was found in the file
         if (unusedBoxes.size() == 0) {
             System.err.println("No valid boxes in file \"" + fileName + "\"");
-            return 0;
+            return new BoxStack();
         }
 
         // Generate initial stack
@@ -88,7 +88,7 @@ public class NPStack2 {
         if (!stack.validateStack())
             throw new RuntimeException();
 
-        return stack.height();
+        return stack;
     }
 
     private static BoxList makeList(BufferedReader file) {

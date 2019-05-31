@@ -29,10 +29,19 @@ class NPStack2Test {
             int sum = 0;
             int times = 50;
             for (int i = 0; i < files.length; i++) {
+                int max = Integer.MIN_VALUE;
+                int min = Integer.MAX_VALUE;
                 for (int j = 0; j < times; j++) {
-                    sum += NPStack2.run(files[i], considerations[i]);
+                    int height = NPStack2.run(files[i], considerations[i]).height();
+                    sum += height;
+                    if (height > max)
+                        max = height;
+                    if (height < min)
+                        min = height;
                 }
-                System.out.println("Height: " + (sum / times) + " Time: " + (System.currentTimeMillis() - time) / times + " File: " + files[i] + " Considerations: " + considerations[i]);
+                System.out.println("File: " + files[i] + ", Considerations: " + considerations[i] + ", Simulations: " + times);
+                System.out.println("Average Height: " + (sum / times) + "\nMax Height: " + max + "\nMin Height: " + min + "\nAverage Time (ms): " + (System.currentTimeMillis() - time) / times);
+                System.out.println();
             }
         } catch (FileNotFoundException e) {
             fail("File \"" + files[0] + "\" not found");
