@@ -173,11 +173,17 @@ public class NPStack2 {
             Box current = stack.get(i - 1);
             Box above = stack.get(i + 1);
 
-            for (Box box : boxes) {
-                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                    unusedBoxes.set(boxIndex, stack.get(i));
-                    stack.set(i, box);
-                    return;
+            for (int j = 0; j < boxes.size(); j++) {
+                Box box = boxes.get(j);
+                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth()) {
+                    if (box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                        unusedBoxes.set(boxIndex, stack.get(i));
+                        stack.set(i, box);
+                        return;
+                    }
+                } else {
+                    boxes.remove(j);
+                    j--;
                 }
             }
         }
@@ -188,15 +194,21 @@ public class NPStack2 {
         Box boxToSwapIn = unusedBoxes.get(boxIndex);
         List<Box> boxes = boxToSwapIn.makeRotations();
 
-        for (int i = 0; i < stack.size(); i++) {
+        for (int i = 0; i <= stack.size(); i++) {
             Box below = stack.get(i - 1);
             Box above = stack.get(i);
 
-            for (Box box : boxes) {
-                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth() && box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
-                    stack.add(i, box);
-                    unusedBoxes.remove(boxIndex);
-                    return;
+            for (int j = 0; j < boxes.size(); j++) {
+                Box box = boxes.get(j);
+                if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth()) {
+                    if (box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                        stack.add(i, box);
+                        unusedBoxes.remove(boxIndex);
+                        return;
+                    }
+                } else {
+                    boxes.remove(j);
+                    j--;
                 }
             }
         }
