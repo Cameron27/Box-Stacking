@@ -57,4 +57,17 @@ public class BoxStack extends ArrayList<Box> {
         else
             return super.get(index);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+
+        int sum = 0;
+        for (Box box : this) {
+            sum += box.getHeight();
+            result.append(String.format("%d %d %d %d\n", box.getWidth(), box.getDepth(), box.getHeight(), sum));
+        }
+
+        return result.toString();
+    }
 }

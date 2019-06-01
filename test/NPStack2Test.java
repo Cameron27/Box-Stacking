@@ -48,8 +48,5 @@ class NPStack2Test {
         } catch (FileNotFoundException e) {
             fail("File \"" + files[0] + "\" not found");
         }
-//        catch (IOException e) {
-//            fail("Error reading from file \"" + file + "\" ");
-//        }
     }
 }
