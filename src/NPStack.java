@@ -2,12 +2,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
-@SuppressWarnings("Duplicates")
 public class NPStack {
     private static Random rnd = new Random();
 
@@ -49,44 +45,52 @@ public class NPStack {
     static BoxStack run(String fileName, int maxConsiderations) throws FileNotFoundException {
         // Create list of boxes
         BufferedReader file = new BufferedReader(new FileReader(new File(fileName)));
-        BoxList unusedBoxes = makeList(file);
+        List<Box> boxes = makeList(file);
 
-        int boxCount = unusedBoxes.size();
+        int boxCount = boxes.size();
 
         // Check at least one box was found in the file
-        if (unusedBoxes.size() == 0) {
+        if (boxes.size() == 0) {
             System.err.println("No valid boxes in file \"" + fileName + "\"");
             return new BoxStack();
         }
 
-        // Generate initial stack
+        // Calculate number of random stack to consider for starting
+        // (5% of total considerations or 10, whichever is smaller)
         int limit = Math.min((int) Math.ceil(maxConsiderations * 0.05), 10);
-        BoxStack bestStack = null;
-        BoxList bestUnusedBoxes = null;
+
+
+        BoxStack stack = null;
+        List<Box> unusedBoxes = null;
         for (int i = 0; i < limit; i++) {
-            BoxList candidateUnusedBoxes = new BoxList(unusedBoxes);
+            // Duplicate box list and randomise order
+            List<Box> candidateUnusedBoxes = new ArrayList<>(boxes);
             Collections.shuffle(candidateUnusedBoxes);
+
+            // Generate stack
             BoxStack candidateStack = makeInitialStack(candidateUnusedBoxes);
 
-            if (bestStack == null || candidateStack.height() > bestStack.height()) {
-                bestStack = candidateStack;
-                bestUnusedBoxes = candidateUnusedBoxes;
+            // Check if better than current best
+            if (stack == null || candidateStack.height() > stack.height()) {
+                stack = candidateStack;
+                unusedBoxes = candidateUnusedBoxes;
             }
         }
 
-        BoxStack stack = bestStack;
-        unusedBoxes = bestUnusedBoxes;
+        // Remove number of random starts from max considerations
+        maxConsiderations -= limit;
 
         // For the number of considerations allowed
-        for (int nthConsider = limit; nthConsider < maxConsiderations; nthConsider++) {
+        for (int nthConsider = 0; nthConsider < maxConsiderations; nthConsider++) {
             // Calculate the number of changes
             int numberOfChanges = changesToMake(nthConsider, maxConsiderations, boxCount);
 
-            // Create clones
+            // Clone current stack and unused boxes
             BoxStack newStack = new BoxStack(stack);
-            BoxList newUnusedBoxes = new BoxList(unusedBoxes);
+            List<Box> newUnusedBoxes = new ArrayList<>(unusedBoxes);
 
-            // For the number of changes, either insert or replace a box
+            // For the number of changes, either insert, replace or remove a box with weightings
+            // 40%, 40% and 10% respectively
             for (int i = 0; i < numberOfChanges; i++) {
                 float rndFloat = rnd.nextFloat();
                 if (rndFloat < 0.4) {
@@ -94,24 +98,26 @@ public class NPStack {
                 } else if (rndFloat < 0.9) {
                     insertBox(newStack, newUnusedBoxes);
                 } else {
-                    removeBox(stack, unusedBoxes);
+                    removeBox(newStack, newUnusedBoxes);
                 }
             }
 
+            // If new stack is higher, replace old stack
             if (newStack.height() >= stack.height()) {
                 stack = newStack;
                 unusedBoxes = newUnusedBoxes;
             }
         }
 
+        // Before finishing, check stack is valid, this should never fail but who knows
         if (!stack.validateStack())
-            throw new RuntimeException();
+            throw new RuntimeException("Final stack is invalid");
 
         return stack;
     }
 
-    private static BoxList makeList(BufferedReader file) {
-        BoxList output = new BoxList();
+    private static List<Box> makeList(BufferedReader file) {
+        List<Box> output = new ArrayList<>();
         int[] index = new int[]{0};
 
         // Applies a bunch of operations on the lines from the file to create boxes and put them in the box list
@@ -141,7 +147,7 @@ public class NPStack {
         return output;
     }
 
-    private static BoxStack makeInitialStack(BoxList unusedBoxes) {
+    private static BoxStack makeInitialStack(List<Box> unusedBoxes) {
         BoxStack output = new BoxStack();
 
         int index = 0;
@@ -163,7 +169,7 @@ public class NPStack {
                 }
             }
 
-            // If a box was inserted, remove it
+            // If a box was inserted, remove it from list of unused boxes
             if (boxToRemove != -1) {
                 unusedBoxes.remove(boxToRemove);
             }
@@ -176,76 +182,113 @@ public class NPStack {
         return output;
     }
 
-    // Calculates the number of changes to make based on the total amount of considerations already made, the total
-    // number of boxes and some ratio. The changes to make calculated using a quadratic
+    // Calculates the number of changes to make based the square of the proportion of total considerations already made
+    // scaled by double the base 2 log of the total considerations to make
     private static int changesToMake(int nthConsideration, int maxConsiderations, int boxNumber) {
         double d = (double) (maxConsiderations - nthConsideration + 1) / (double) maxConsiderations;
         double square = d * d;
         return (int) Math.ceil((square * intLog2(boxNumber) * 2));
     }
 
-    private static void swapBox(BoxStack stack, BoxList unusedBoxes) {
+    // Swap a random unused box with another box in the stack
+    private static void swapBox(BoxStack stack, List<Box> unusedBoxes) {
+        // Check there is at least 1 unused box
         if (unusedBoxes.size() == 0) return;
 
+        // Select a random unused box and generate all its rotations
         int boxIndex = rnd.nextInt(unusedBoxes.size());
         Box boxToSwapIn = unusedBoxes.get(boxIndex);
         List<Box> boxes = boxToSwapIn.makeRotations();
 
+        // Going through the stack
         for (int i = 0; i < stack.size(); i++) {
+            // Get the box above and below
             Box below = stack.get(i - 1);
             Box above = stack.get(i + 1);
 
+            // For each rotation
             for (int j = 0; j < boxes.size(); j++) {
                 Box box = boxes.get(j);
+
+                // Check if the box below is larger
                 if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth()) {
+                    // Check if box above is smaller
                     if (box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                        // Swap the boxes in the stack and in the unused box list
                         unusedBoxes.set(boxIndex, stack.get(i));
                         stack.set(i, box);
                         return;
                     }
-                } else {
+                }
+                // If the box below is not larger, this rotation isn't going to be able to fit up any
+                // higher so just remove it
+                else {
                     boxes.remove(j);
                     j--;
                 }
             }
+
+            // If out of rotations, break
+            if (boxes.size() == 0)
+                break;
         }
     }
 
-    private static void insertBox(BoxStack stack, BoxList unusedBoxes) {
+    // Insert a random unused box into the stack
+    private static void insertBox(BoxStack stack, List<Box> unusedBoxes) {
+        // Check there is at least 1 unused box
         if (unusedBoxes.size() == 0) return;
 
+        // Select a random unused box and generate all its rotations
         int boxIndex = rnd.nextInt(unusedBoxes.size());
         Box boxToSwapIn = unusedBoxes.get(boxIndex);
         List<Box> boxes = boxToSwapIn.makeRotations();
 
+        // Going through the stack
         for (int i = 0; i <= stack.size(); i++) {
+            // Get the box above and below
             Box below = stack.get(i - 1);
             Box above = stack.get(i);
 
+            // For each rotation
             for (int j = 0; j < boxes.size(); j++) {
                 Box box = boxes.get(j);
+
+                // Check if the box below is larger
                 if (box.getWidth() < below.getWidth() && box.getDepth() < below.getDepth()) {
+                    // Check if box above is smaller
                     if (box.getWidth() > above.getWidth() && box.getDepth() > above.getDepth()) {
+                        // Add the box to the stack and remove it from the unused boxes list
                         stack.add(i, box);
                         unusedBoxes.remove(boxIndex);
                         return;
                     }
-                } else {
+                }
+                // If the box below is not larger, this rotation isn't going to be able to fit up any
+                // higher so just remove it
+                else {
                     boxes.remove(j);
                     j--;
                 }
             }
+
+            // If out of rotations, break
+            if (boxes.size() == 0)
+                break;
         }
     }
 
-    private static void removeBox(BoxStack stack, BoxList unusedBoxes) {
+    // Remove a random box from the stack
+    private static void removeBox(BoxStack stack, List<Box> unusedBoxes) {
         if (stack.size() == 0) return;
 
         Box removedBox = stack.remove(rnd.nextInt(stack.size()));
         unusedBoxes.add(removedBox);
     }
 
+    // Returns base 2 log of number rounded up
     private static int intLog2(int i) {
+        // Invert negatives
         if (i < 0)
             i = -i;
 

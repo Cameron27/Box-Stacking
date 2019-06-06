@@ -22,19 +22,27 @@ public class BoxStack extends ArrayList<Box> {
         return sum;
     }
 
+    // Checks that a stack is valid
     public boolean validateStack() {
+        // Empty stacks are valid
         if (size() == 0) return true;
+
+        // Gets the bottom box
         Box current = get(0);
         Set<Integer> set = new HashSet<>();
         set.add(get(0).getId());
 
+        // For each box
         for (int i = 1; i < size(); i++) {
             Box box = get(i);
+
+            // If it is larger then the box below it, fail
             if (box.getWidth() > current.getWidth() || box.getDepth() > current.getDepth())
                 return false;
-
+            // If the box id has already been seen, fail
             if (set.contains(box.getId()))
                 return false;
+                // Otherwise record the box id
             else
                 set.add(box.getId());
 
@@ -43,13 +51,15 @@ public class BoxStack extends ArrayList<Box> {
         return true;
     }
 
+    // Gets a box at a specific index, extends ArrayList.get by having -1 return the floor and
+    // size() return the a 0x0x0 box
     @Override
     public Box get(int index) {
         // If index is -1 return a box as large as possible to represent floor
         if (index == -1) {
             return new Box(-1, Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
         }
-        // If index is one above end of list, return box of 0 size to represent nothing about top os stack
+        // If index is one above end of list, return box of 0 size to represent nothing about top of stack
         else if (index == size()) {
             return new Box(-1, 0, 0, 0);
         }
@@ -63,9 +73,14 @@ public class BoxStack extends ArrayList<Box> {
         StringBuilder result = new StringBuilder();
 
         int sum = 0;
+
+        // For each box
         for (Box box : this) {
+            // Add the height
             sum += box.getHeight();
-            result.append(String.format("%d %d %d %d\n", box.getWidth(), box.getDepth(), box.getHeight(), sum));
+
+            // Add line of box dimensions and current height
+            result.append(String.format("%s %s\n", box.toString(), sum));
         }
 
         return result.toString();

@@ -17,6 +17,7 @@ public class Box {
         this.height = height;
     }
 
+    // Creates a list of 3 boxes with all the different rotations of this box
     public List<Box> makeRotations() {
         List<Box> l = new LinkedList<>();
         l.add(new Box(id, width, depth, height));
