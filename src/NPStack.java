@@ -4,6 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 
+/**
+ * NPStack program that takes a file of boxes and uses simulated annealing to find the tallest stack it can
+ *
+ * @author Cameron Salisbury (1293897)
+ */
 public class NPStack {
     private static Random rnd = new Random();
 

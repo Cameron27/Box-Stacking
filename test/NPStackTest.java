@@ -28,7 +28,7 @@ class NPStackTest {
         try {
 
             long time = System.currentTimeMillis();
-            int times = 200;
+            int times = 50;
             for (int i = 0; i < files.length; i++) {
                 int sum = 0;
                 int max = Integer.MIN_VALUE;

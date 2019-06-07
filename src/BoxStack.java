@@ -2,6 +2,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+
+/**
+ * Box class is an ArrayList that represents a stack of boxes
+ *
+ * @author Cameron Salisbury (1293897)
+ */
 public class BoxStack extends ArrayList<Box> {
     public BoxStack() {
         super();

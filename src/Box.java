@@ -1,6 +1,12 @@
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Box class represents a box object with a width, depth, height and id
+ *
+ * @author Cameron Salisbury (1293897)
+ */
 public class Box {
     private int id;
     private int width;
@@ -20,9 +26,16 @@ public class Box {
     // Creates a list of 3 boxes with all the different rotations of this box
     public List<Box> makeRotations() {
         List<Box> l = new LinkedList<>();
+
+        // Adds each possible rotation, checking that the height is unique each time
         l.add(new Box(id, width, depth, height));
-        l.add(new Box(id, width, height, depth));
-        l.add(new Box(id, height, depth, width));
+        if (depth != height)
+            l.add(new Box(id, width, height, depth));
+        if (width != height && width != depth)
+            l.add(new Box(id, height, depth, width));
+
+        // Shuffle boxes to remove bias from first rotation
+        Collections.shuffle(l);
         return l;
     }
 
