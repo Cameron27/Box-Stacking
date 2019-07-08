@@ -1,6 +1,14 @@
+# Box Stacking
+A program that uses simulated annealing to try and find the tallest stack of boxes possible given a set of boxes
+
 Program usage is:
 java NPStack [file] [interations]
 
-Solution used simulated annealing where to being multiple random stacks are generated and the best one is picked to be the starting point. Then, for each allowed consideration
-a number of random changes are made to the stack of boxes. The possible changes are removing a box, replacing a box or inserting a box. After all the random changes, if the
-new stack is better than the previous stack it will replace it.
+The file should be a plain text file with each line containing a triplet of space separated numbers that represent the box dimensions
+e.g  
+1 2 3  
+5 6 8  
+4 7 2  
+5 9 6  
+5 5 5  
+12 6 9  
